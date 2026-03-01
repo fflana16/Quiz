@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ChevronRight, 
@@ -6,9 +6,18 @@ import {
   CheckCircle2, 
   XCircle, 
   RotateCcw, 
-  GraduationCap,
+  Dna,
+  Bone,
+  Microscope,
+  Target,
+  ArrowRight,
+  Info,
+  Trophy,
+  Heart,
+  Brain,
+  Activity,
   Stethoscope,
-  Award
+  Thermometer
 } from 'lucide-react';
 import { questions } from './data/questions';
 import { QuizState } from './types';
@@ -16,7 +25,6 @@ import { QuizState } from './types';
 export default function App() {
   const [gameState, setGameState] = useState<QuizState>('welcome');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState<Record<number, string>>({});
 
@@ -24,38 +32,45 @@ export default function App() {
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
   const isFirstQuestion = currentQuestionIndex === 0;
 
+  // Visual identification based on category
+  const isUpperAnatomy = currentQuestion?.category.includes('Anatomia Aplicada');
+  const theme = isUpperAnatomy 
+    ? { 
+        primary: 'text-blue-600',
+        bg: 'bg-blue-50',
+        border: 'border-blue-600',
+        btn: 'bg-blue-600 hover:bg-blue-700',
+        icon: <Dna className="w-5 h-5" />,
+        label: 'ANATOMIA APLICADA'
+      } 
+    : { 
+        primary: 'text-amber-600',
+        bg: 'bg-amber-50',
+        border: 'border-amber-600',
+        btn: 'bg-amber-600 hover:bg-amber-700',
+        icon: <Bone className="w-5 h-5" />,
+        label: 'OSTEOLOGIA INFERIOR'
+      };
+
   const handleOptionClick = (optionId: string) => {
     if (answeredQuestions[currentQuestionIndex] !== undefined) return;
-
     setAnsweredQuestions(prev => ({ ...prev, [currentQuestionIndex]: optionId }));
-    setSelectedOptionId(optionId);
-
     const option = currentQuestion.options.find(o => o.id === optionId);
-    if (option?.isCorrect) {
-      setScore(prev => prev + 1);
-    }
+    if (option?.isCorrect) setScore(prev => prev + 1);
   };
 
   const handleNext = () => {
-    if (isLastQuestion) {
-      setGameState('result');
-    } else {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedOptionId(answeredQuestions[currentQuestionIndex + 1] || null);
-    }
+    if (isLastQuestion) setGameState('result');
+    else setCurrentQuestionIndex(prev => prev + 1);
   };
 
   const handlePrevious = () => {
-    if (!isFirstQuestion) {
-      setCurrentQuestionIndex(prev => prev - 1);
-      setSelectedOptionId(answeredQuestions[currentQuestionIndex - 1] || null);
-    }
+    if (!isFirstQuestion) setCurrentQuestionIndex(prev => prev - 1);
   };
 
   const resetQuiz = () => {
     setGameState('welcome');
     setCurrentQuestionIndex(0);
-    setSelectedOptionId(null);
     setScore(0);
     setAnsweredQuestions({});
   };
@@ -63,88 +78,135 @@ export default function App() {
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-emerald-100">
-      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
+    <div className="min-h-screen font-sans data-grid">
+      <div className="max-w-5xl mx-auto px-4 py-12">
         
         <AnimatePresence mode="wait">
           {gameState === 'welcome' && (
             <motion.div
               key="welcome"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 md:p-12 text-center border border-slate-100"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="scientific-card border-t-8 border-t-blue-600 p-8 md:p-16 relative overflow-hidden"
             >
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-50 rounded-2xl mb-6">
-                <GraduationCap className="w-10 h-10 text-emerald-600" />
+              {/* Background Decorative Icons */}
+              <div className="absolute -right-10 -top-10 opacity-[0.03] pointer-events-none">
+                <Heart className="w-64 h-64" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-4">
-                Quiz de Anatomia UNILESTE
-              </h1>
-              <p className="text-slate-500 text-lg mb-8 max-w-md mx-auto">
-                Teste seus conhecimentos em Anatomia Aplicada à Odontologia e Osteologia dos Membros Inferiores.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 text-left">
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <h3 className="font-semibold text-slate-800 mb-1 flex items-center gap-2">
-                    <Stethoscope className="w-4 h-4 text-emerald-500" />
-                    Anatomia Aplicada
-                  </h3>
-                  <p className="text-sm text-slate-500">Conceitos fundamentais e anatomia de cabeça e pescoço.</p>
+              <div className="absolute -left-10 -bottom-10 opacity-[0.03] pointer-events-none">
+                <Brain className="w-64 h-64" />
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-12 items-center relative z-10">
+                <div className="flex-1 space-y-8">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-blue-600 font-mono text-sm font-bold tracking-widest">
+                      <Microscope className="w-4 h-4" />
+                      UNILESTE / ODONTOLOGIA
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 uppercase">
+                      Protocolo <br />
+                      <span className="text-blue-600">Anatômico</span>
+                    </h1>
+                  </div>
+                  
+                  <p className="text-slate-600 text-xl font-bold leading-relaxed max-w-md border-l-4 border-blue-600 pl-4">
+                    Aula 1- Introdução à Anatomia e Fisiologia
+                  </p>
+
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 font-mono text-xs font-bold border border-slate-200">
+                      <Target className="w-3 h-3" /> 20 QUESTÕES
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 font-mono text-xs font-bold border border-slate-200">
+                      <Info className="w-3 h-3" /> TURMA NOTURNO
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 font-mono text-xs font-bold border border-slate-200">
+                      <Activity className="w-3 h-3" /> FISIOLOGIA
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 font-mono text-xs font-bold border border-slate-200">
+                      <Stethoscope className="w-3 h-3" /> CLÍNICA
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 font-mono text-xs font-bold border border-slate-200">
+                      <Thermometer className="w-3 h-3" /> DIAGNÓSTICO
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setGameState('quiz')}
+                    className="btn-scientific bg-slate-900 text-white border-slate-900 hover:bg-blue-600 hover:border-blue-600 flex items-center gap-4 group"
+                  >
+                    INICIAR AVALIAÇÃO
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <h3 className="font-semibold text-slate-800 mb-1 flex items-center gap-2">
-                    <Award className="w-4 h-4 text-emerald-500" />
-                    Osteologia
-                  </h3>
-                  <p className="text-sm text-slate-500">Estudo detalhado dos ossos dos membros inferiores.</p>
+
+                <div className="hidden md:block w-1/3 aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-full flex items-center justify-center relative">
+                   <div className="absolute inset-4 border-2 border-blue-100 rounded-full animate-pulse" />
+                   <Skull className="w-24 h-24 text-slate-300" />
                 </div>
               </div>
-              <button
-                onClick={() => setGameState('quiz')}
-                className="w-full md:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-semibold transition-all shadow-lg shadow-emerald-200 flex items-center justify-center gap-2 group"
-              >
-                Começar Quiz
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
             </motion.div>
           )}
 
           {gameState === 'quiz' && (
             <motion.div
               key="quiz"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
               className="space-y-6"
             >
-              {/* Header & Progress */}
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
-                    {currentQuestion.category}
-                  </span>
-                  <span className="text-sm font-medium text-slate-400">
-                    Questão {currentQuestionIndex + 1} de {questions.length}
-                  </span>
+              {/* Technical Header */}
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white p-6 border border-slate-200">
+                <div className="space-y-1">
+                  <div className={`flex items-center gap-2 font-mono text-xs font-bold tracking-widest ${theme.primary}`}>
+                    {theme.icon}
+                    {theme.label}
+                  </div>
+                  <div className="text-3xl font-black tracking-tighter uppercase">
+                    Questão {String(currentQuestionIndex + 1).padStart(2, '0')}
+                  </div>
                 </div>
-                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                  <motion.div 
-                    className="h-full bg-emerald-500"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.5 }}
-                  />
+                
+                <div className="flex items-center gap-8">
+                  <div className="hidden lg:flex items-center gap-4 border-r border-slate-200 pr-8">
+                    <Heart className="w-4 h-4 text-red-500" />
+                    <Brain className="w-4 h-4 text-purple-500" />
+                    <Activity className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Progresso</div>
+                    <div className="text-xl font-mono font-bold">{Math.round(progress)}%</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acertos</div>
+                    <div className="text-xl font-mono font-bold text-blue-600">{score}</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Question Card */}
-              <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-6 md:p-10 border border-slate-100 min-h-[400px] flex flex-col">
-                <h2 className="text-xl md:text-2xl font-semibold text-slate-800 mb-8 leading-relaxed">
+              {/* Progress Bar */}
+              <div className="h-1 w-full bg-slate-200">
+                <motion.div 
+                  className={`h-full ${isUpperAnatomy ? 'bg-blue-600' : 'bg-amber-600'}`}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                />
+              </div>
+
+              {/* Main Question Area */}
+              <div className="scientific-card p-8 md:p-12 relative">
+                <div className="absolute top-0 right-0 p-4 font-mono text-[10px] text-slate-300 pointer-events-none">
+                  ID_REF: {currentQuestion.id} // CATEGORIA: {currentQuestion.category.toUpperCase()}
+                </div>
+
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-12 leading-tight max-w-3xl">
                   {currentQuestion.text}
                 </h2>
 
-                <div className="grid gap-3 flex-grow">
+                <div className="grid gap-2">
                   {currentQuestion.options.map((option) => {
                     const isAnswered = answeredQuestions[currentQuestionIndex] !== undefined;
                     const isSelected = answeredQuestions[currentQuestionIndex] === option.id;
@@ -157,50 +219,55 @@ export default function App() {
                         onClick={() => handleOptionClick(option.id)}
                         disabled={isAnswered}
                         className={`
-                          group relative w-full p-4 md:p-5 text-left rounded-2xl border-2 transition-all duration-200 flex items-center justify-between
-                          ${!isAnswered ? 'border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30' : ''}
-                          ${showCorrect ? 'border-emerald-500 bg-emerald-50 text-emerald-900' : ''}
-                          ${showWrong ? 'border-rose-500 bg-rose-50 text-rose-900' : ''}
-                          ${isAnswered && !showCorrect && !showWrong ? 'border-slate-50 opacity-60 text-slate-400' : ''}
+                          group relative w-full p-5 text-left transition-all border-2 flex items-center justify-between
+                          ${!isAnswered ? 'border-slate-100 bg-slate-50 hover:border-slate-300 hover:bg-white' : ''}
+                          ${showCorrect ? 'border-blue-600 bg-blue-50 text-blue-900' : ''}
+                          ${showWrong ? 'border-red-600 bg-red-50 text-red-900' : ''}
+                          ${isAnswered && !showCorrect && !showWrong ? 'border-slate-50 opacity-40 grayscale' : ''}
                         `}
                       >
-                        <span className="text-base md:text-lg font-medium pr-8">
-                          {option.text}
-                        </span>
+                        <div className="flex items-center gap-4">
+                          <span className="font-mono text-xs font-bold text-slate-400 group-hover:text-blue-600 transition-colors">
+                            [{option.id.toUpperCase()}]
+                          </span>
+                          <span className="text-lg font-medium">
+                            {option.text.replace(/^[A-D]\.\s/, '')}
+                          </span>
+                        </div>
                         
-                        {showCorrect && <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />}
-                        {showWrong && <XCircle className="w-6 h-6 text-rose-600 shrink-0" />}
+                        {showCorrect && <CheckCircle2 className="w-5 h-5 text-blue-600" />}
+                        {showWrong && <XCircle className="w-5 h-5 text-red-600" />}
                       </button>
                     );
                   })}
                 </div>
 
                 {/* Navigation */}
-                <div className="flex items-center justify-between mt-10 pt-6 border-t border-slate-50">
+                <div className="flex items-center justify-between mt-12 pt-8 border-t border-slate-100">
                   <button
                     onClick={handlePrevious}
                     disabled={isFirstQuestion}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-colors ${
-                      isFirstQuestion 
-                        ? 'text-slate-300 cursor-not-allowed' 
-                        : 'text-slate-600 hover:bg-slate-100'
+                    className={`btn-scientific border-transparent ${
+                      isFirstQuestion ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    <ChevronLeft className="w-5 h-5" />
-                    Anterior
+                    <div className="flex items-center gap-2">
+                      <ChevronLeft className="w-4 h-4" /> ANTERIOR
+                    </div>
                   </button>
 
                   <button
                     onClick={handleNext}
                     disabled={answeredQuestions[currentQuestionIndex] === undefined}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                    className={`btn-scientific ${
                       answeredQuestions[currentQuestionIndex] === undefined
-                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                        : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-200'
+                        ? 'bg-slate-100 border-slate-100 text-slate-400 cursor-not-allowed'
+                        : `${theme.btn} border-transparent text-white shadow-lg`
                     }`}
                   >
-                    {isLastQuestion ? 'Finalizar' : 'Próxima'}
-                    <ChevronRight className="w-5 h-5" />
+                    <div className="flex items-center gap-2">
+                      {isLastQuestion ? 'FINALIZAR' : 'PRÓXIMA'} <ChevronRight className="w-4 h-4" />
+                    </div>
                   </button>
                 </div>
               </div>
@@ -210,53 +277,88 @@ export default function App() {
           {gameState === 'result' && (
             <motion.div
               key="result"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 md:p-12 text-center border border-slate-100"
+              className="scientific-card border-t-8 border-t-blue-600 p-8 md:p-16 text-center"
             >
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-emerald-50 rounded-full mb-6">
-                <Award className="w-12 h-12 text-emerald-600" />
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-50 rounded-full mb-8">
+                <Trophy className="w-10 h-10 text-blue-600" />
               </div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-2">Quiz Concluído!</h2>
-              <p className="text-slate-500 mb-8">Confira seu desempenho abaixo:</p>
               
-              <div className="bg-slate-50 rounded-3xl p-8 mb-10">
-                <div className="text-6xl font-black text-emerald-600 mb-2">
-                  {Math.round((score / questions.length) * 100)}%
+              <h2 className="text-4xl font-black tracking-tighter uppercase mb-2">Relatório de Desempenho</h2>
+              <p className="text-slate-500 font-mono text-sm mb-12">AVALIAÇÃO FINALIZADA COM SUCESSO</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 mb-12 bg-slate-200 p-1">
+                <div className="bg-white p-8">
+                  <div className="text-4xl font-black text-blue-600 mb-1">
+                    {Math.round((score / questions.length) * 100)}%
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Precisão</div>
                 </div>
-                <div className="text-slate-600 font-medium">
-                  Você acertou {score} de {questions.length} questões
+                <div className="bg-white p-8">
+                  <div className="text-4xl font-black text-slate-900 mb-1">
+                    {score}
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acertos</div>
+                </div>
+                <div className="bg-white p-8">
+                  <div className="text-4xl font-black text-slate-900 mb-1">
+                    {questions.length - score}
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Erros</div>
                 </div>
               </div>
 
               <div className="flex flex-col md:flex-row items-center justify-center gap-4">
                 <button
                   onClick={resetQuiz}
-                  className="w-full md:w-auto px-8 py-4 bg-slate-900 text-white rounded-2xl font-semibold hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                  className="btn-scientific bg-slate-900 text-white border-slate-900 hover:bg-blue-600 hover:border-blue-600 w-full md:w-auto"
                 >
-                  <RotateCcw className="w-5 h-5" />
-                  Tentar Novamente
+                  REINICIAR TESTE
                 </button>
                 <button
                   onClick={() => {
                     setCurrentQuestionIndex(0);
                     setGameState('quiz');
                   }}
-                  className="w-full md:w-auto px-8 py-4 bg-white border-2 border-slate-200 text-slate-600 rounded-2xl font-semibold hover:bg-slate-50 transition-all"
+                  className="btn-scientific bg-white text-slate-900 border-slate-200 hover:bg-slate-50 w-full md:w-auto"
                 >
-                  Revisar Respostas
+                  REVISAR QUESTÕES
                 </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <footer className="mt-12 text-center">
-          <p className="text-slate-400 text-sm font-medium">
-            © 2024 UNILESTE - Faculdade de Odontologia
-          </p>
+        <footer className="mt-16 border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 bg-slate-900 flex items-center justify-center text-white font-black text-[10px]">U</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+              UNILESTE • ODONTOLOGIA
+            </div>
+          </div>
+          <div className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em]">
+            Turma Noturno - 2026
+          </div>
         </footer>
       </div>
     </div>
   );
 }
+
+const Skull = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M9 10L9.01 10" />
+    <path d="M15 10L15.01 10" />
+    <path d="M10 20V18H14V20" />
+    <path d="M12 2C7.03 2 3 6.03 3 11C3 13.5 4 15.5 5.5 17L5 22H19L18.5 17C20 15.5 21 13.5 21 11C21 6.03 16.97 2 12 2Z" />
+  </svg>
+);

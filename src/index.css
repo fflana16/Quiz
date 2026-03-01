@@ -1,1 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-medical-blue: #0066FF;
+  --color-medical-amber: #FF9900;
+  --color-medical-bg: #FFFFFF;
+  --color-medical-border: #E5E7EB;
+}
+
+@layer base {
+  body {
+    @apply bg-[#F3F4F6] text-[#1A1A1A] antialiased;
+  }
+}
+
+.scientific-card {
+  @apply bg-white border border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.1)] rounded-none;
+}
+
+.data-grid {
+  background-image: radial-gradient(#E5E7EB 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.btn-scientific {
+  @apply px-6 py-3 font-mono text-sm font-bold uppercase tracking-tighter transition-all border-2 active:translate-y-0.5;
+}

@@ -114,6 +114,9 @@ export default function App() {
                   <p className="text-slate-600 text-xl font-bold leading-relaxed max-w-md border-l-4 border-blue-600 pl-4">
                     Aula 1- Introdução à Anatomia e Fisiologia
                   </p>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] pl-4">
+                    Alunas: Ana Lívia • Esther
+                  </div>
 
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 font-mono text-xs font-bold border border-slate-200">
@@ -286,7 +289,10 @@ export default function App() {
               </div>
               
               <h2 className="text-4xl font-black tracking-tighter uppercase mb-2">Relatório de Desempenho</h2>
-              <p className="text-slate-500 font-mono text-sm mb-12">AVALIAÇÃO FINALIZADA COM SUCESSO</p>
+              <p className="text-slate-500 font-mono text-sm mb-4">AVALIAÇÃO FINALIZADA COM SUCESSO</p>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-12">
+                Alunas: Ana Lívia • Esther
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-1 mb-12 bg-slate-200 p-1">
                 <div className="bg-white p-8">
@@ -337,8 +343,13 @@ export default function App() {
               UNILESTE • ODONTOLOGIA
             </div>
           </div>
-          <div className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em]">
-            Turma Noturno - 2026
+          <div className="flex flex-col items-center md:items-end gap-1">
+            <div className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em]">
+              Turma Noturno - 2026
+            </div>
+            <div className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.1em]">
+              Alunas: Ana Lívia • Esther
+            </div>
           </div>
         </footer>
       </div>
